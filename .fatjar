@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sat Aug 01 14:41:17 CST 2015
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=StormTest_fat.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
