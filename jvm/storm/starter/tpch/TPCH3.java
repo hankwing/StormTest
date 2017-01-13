@@ -55,7 +55,8 @@ public class TPCH3 {
 	public static long intervalTime = 120000;	// 5 minites one sample
 	public static long calThroughtInterval = 5000;  // calculate throughput every this millseconds
 	public static long ignoreTime = 60000;
-	public static String intermediateTopic = "tpchtemptopics";
+	public static String intermediateTopic = "tpchtemptopics";		// 用作样本 训练 判断是否该选择新的配置的缓存topic
+	public static String drawTopic = "drawtopics";			// 用作画图数据的缓存topic
 	
 	/*public static int supervisors = 4;		// supervisor number
 	public static int cpucores = 96;
@@ -776,7 +777,7 @@ public class TPCH3 {
 						joinBoltNumber + "," + onBolt
 						+ "," + joinBolt + "," + spouts + ","
 						+ windowLength + "," + emitFrequency + "\n");*/
-				
+				// 每隔间隔时间长的时候 则发送平均数据
 				printSpoutSpeed.schedule(new TimerTask() {
 
 					@Override
@@ -884,7 +885,7 @@ public class TPCH3 {
 					}
 					
 				}, wholeSampleTime);*/
-
+				// 间隔时间短时 发送画图数据
 				calThroughput.schedule(new TimerTask() {
 
 					@Override
@@ -910,7 +911,29 @@ public class TPCH3 {
 							avgThroughout = (int) ((avgThroughout * throughtNum + (spoutNum 
 									/ (calThroughtInterval / 1000))) / (throughtNum + 1));
 							throughtNum++;
-						}
+						}	
+						/*HashMap hm = (HashMap) _context
+								.getRegisteredMetricByName(
+										"__complete-latency")
+								.getValueAndReset();*/
+						
+						//Double completeLatency = stormUiMetrics.getSpoutLatency();
+						//int completeLatency = 0;
+						//String dataString = df.format(before.getTime()) + ","
+						//		+ avgThroughout + "," +completeLatency +"\n";
+						//writer.write(dataString);
+						//writer.flush();
+						
+						KeyedMessage<String, String> data = isOnBolt ? 
+								new KeyedMessage<String, String>(
+								TPCH3.drawTopic, "onBoltDraw,"+ taskCount+"," + avgThroughout
+								+ "," + avgCpu + "," + avgMemory) : 
+								new KeyedMessage<String, String>(
+								TPCH3.drawTopic, "joinBoltDraw,"+ taskCount+"," + avgThroughout
+								+ "," + avgCpu + "," + avgMemory );
+						// send intermediate data to kafka topic
+						//if(!isIgnore) {
+						producer.send(data);
 						// LOG.info("avg throughput: " + sleepInterval + ": "
 						// +evgThroughout);
 						spoutNum = 0;

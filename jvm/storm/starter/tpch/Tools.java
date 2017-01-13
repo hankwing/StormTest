@@ -31,14 +31,14 @@ public class Tools {
 		sigar = new Sigar();
 	}
 	
-	public double getCpuUsage() {
+	public float getCpuUsage() {
 		try {
 			cpuPerc = sigar.getCpuPerc();
 		} catch (SigarException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return cpuPerc.getSys() + cpuPerc.getUser();
+		return (float) (cpuPerc.getSys() + cpuPerc.getUser());
 	}
 	
 	public long getMemoryUsage() {

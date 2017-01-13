@@ -102,6 +102,28 @@ public class TPCHKafkaSpouts {
 			calThroughput = new Timer();
 			stopCollectAndChangeRate = new Timer();
 			
+			// task count
+			final int taskCount = context.getComponentTasks(context.getThisComponentId()).size()
+					* 3;	// 3 is spout number
+			// Build the configuration required for connecting to Kafka
+			Properties props = new Properties();
+			
+			// List of Kafka brokers. Complete list of brokers is not
+			// required as the producer will auto discover the rest of
+			// the brokers. Change this to suit your deployment.
+			props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
+					+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.24:9092");
+			//props.put("partitioner.class", "storm.starter.kafka.SimplePartitioner");
+			// Serializer used for sending data to kafka. Since we are sending
+			// string,
+			// we are using StringEncoder.
+			//props.put("topic.metadata.refresh.interval.ms", "2000");
+			props.put("serializer.class", "kafka.serializer.StringEncoder");
+			props.put("request.required.acks", "1");	// guarantee the message be sent
+			// Create the producer instance
+			ProducerConfig config = new ProducerConfig(props);
+			final Producer<String, String> producer = new Producer<String, String>(config);
+			// 每隔一小段时间收集各种数据 并作平均 发送给kafka用作画图的数据
 			calThroughput.schedule(new TimerTask() {
 
 				@Override
@@ -125,34 +147,41 @@ public class TPCHKafkaSpouts {
 					// LOG.info("avg throughput: " + sleepInterval + ": "
 					// +evgThroughout);
 					spoutNum = 0;
+					
+					try {
+						
+						/*HashMap hm = (HashMap) _context
+								.getRegisteredMetricByName(
+										"__complete-latency")
+								.getValueAndReset();*/
+						
+						//Double completeLatency = stormUiMetrics.getSpoutLatency();
+						//int completeLatency = 0;
+						//String dataString = df.format(before.getTime()) + ","
+						//		+ avgThroughout + "," +completeLatency +"\n";
+						//writer.write(dataString);
+						//writer.flush();
+						
+						KeyedMessage<String, String> data = new KeyedMessage<String, String>(
+								TPCH3.drawTopic, "spoutDraw," + taskCount + ","+ avgThroughout
+								+ "," + avgCPU + "," + avgMemory);
+						// send intermediate data to kafka topic
+						//if(!isIgnore) {
+							producer.send(data);
+						//}
+						//else {
+						//	isIgnore = false;
+						//}
+
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 
 			}, TPCH3.calThroughtInterval , TPCH3.calThroughtInterval);
 			
 			try {
-				
-				// task count
-				final int taskCount = context.getComponentTasks(context.getThisComponentId()).size()
-						* 3;	// 3 is spout number
-				// Build the configuration required for connecting to Kafka
-				Properties props = new Properties();
-				
-				// List of Kafka brokers. Complete list of brokers is not
-				// required as the producer will auto discover the rest of
-				// the brokers. Change this to suit your deployment.
-				props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
-						+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.24:9092");
-				//props.put("partitioner.class", "storm.starter.kafka.SimplePartitioner");
-				// Serializer used for sending data to kafka. Since we are sending
-				// string,
-				// we are using StringEncoder.
-				//props.put("topic.metadata.refresh.interval.ms", "2000");
-				props.put("serializer.class", "kafka.serializer.StringEncoder");
-				props.put("request.required.acks", "1");	// guarantee the message be sent
-				// Create the producer instance
-				ProducerConfig config = new ProducerConfig(props);
-				final Producer<String, String> producer = new Producer<String, String>(config);
-
 				//fos = new FileOutputStream(
 				//		"/home/wamdm/wengzujian/stormResult/ThroughputAndLatency_"
 				//				+ context.getThisTaskId());
