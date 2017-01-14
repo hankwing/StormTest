@@ -134,12 +134,13 @@ public class TPCHKafkaSpouts {
 					if (avgThroughout == 0) {
 						
 						avgCPU = tools.getCpuUsage();		// get cpu metric
-						avgMemory = tools.getMemoryUsage();
+						avgMemory = tools.getMemoryUsage() / 1000000;
 						avgThroughout = (int) (spoutNum / (TPCH3.calThroughtInterval/ 1000) );
 						throughtNum = 1;
 					} else {
 						avgCPU = ( avgCPU * throughtNum + tools.getCpuUsage() ) / (throughtNum +1);
-						avgMemory = ( avgMemory * throughtNum + tools.getMemoryUsage() ) / (throughtNum +1);
+						avgMemory = ( avgMemory * throughtNum + tools.getMemoryUsage() / 1000000 ) 
+								/ (throughtNum +1);
 						avgThroughout = (int) ((avgThroughout * throughtNum +(spoutNum 
 								/ (TPCH3.calThroughtInterval / 1000))) / (throughtNum + 1));
 						throughtNum++;
@@ -211,18 +212,18 @@ public class TPCHKafkaSpouts {
 									.getValueAndReset();*/
 							
 							//Double completeLatency = stormUiMetrics.getSpoutLatency();
-							int completeLatency = 0;
-							String dataString = df.format(before.getTime()) + ","
-									+ avgThroughout + "," +completeLatency +"\n";
+							//int completeLatency = 0;
+							//String dataString = df.format(before.getTime()) + ","
+							//		+ avgThroughout + "," +completeLatency +"\n";
 							//writer.write(dataString);
 							//writer.flush();
 							
-							KeyedMessage<String, String> data = new KeyedMessage<String, String>(
-									TPCH3.intermediateTopic, "spoutRate," + taskCount + ","+ dataString
-									+ "," + avgCPU + "," + avgMemory);
+							//KeyedMessage<String, String> data = new KeyedMessage<String, String>(
+							//		TPCH3.intermediateTopic, "spoutRate," + taskCount + ","+ dataString
+							//		+ "," + avgCPU + "," + avgMemory);
 							// send intermediate data to kafka topic
 							//if(!isIgnore) {
-								producer.send(data);
+							//	producer.send(data);
 							//}
 							//else {
 							//	isIgnore = false;

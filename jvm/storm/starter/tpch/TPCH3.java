@@ -796,12 +796,12 @@ public class TPCH3 {
 									.getValueAndReset();
 								
 								int completeLatency = ((Double)hm.get("default")).intValue();*/
-								String dataString = df.format(before.getTime()) + ","
-										+ avgThroughout + "\n";
+								//String dataString = df.format(before.getTime()) + ","
+								//		+ avgThroughout + "\n";
 								//writer.write(dataString);
 								//writer.flush();
 								
-								KeyedMessage<String, String> data = isOnBolt ? 
+								/*KeyedMessage<String, String> data = isOnBolt ? 
 										new KeyedMessage<String, String>(		
 										TPCH3.intermediateTopic, "onBolt,"+ taskCount+"," + dataString
 										+ "," + avgCpu + "," + avgMemory + "," + supervisors + "," 
@@ -817,10 +817,10 @@ public class TPCH3 {
 										+ "," + joinBoltNumber + + kafkaBrokers + ","
 										+ kafkaPartitions + 
 										"," + onBolt +"," + joinBolt + "," 
-										+ spouts +"," + windowLength +"," + emitFrequency );
+										+ spouts +"," + windowLength +"," + emitFrequency );*/
 								// send intermediate data to kafka topic
 								//if(!isIgnore ) {
-									producer.send(data);
+								//	producer.send(data);
 								//}
 								//else {
 								//	isIgnore = false;
@@ -901,13 +901,14 @@ public class TPCH3 {
 						if (avgThroughout == 0) {
 							
 							avgCpu = tools.getCpuUsage();		// get cpu metric
-							avgMemory = tools.getMemoryUsage();
+							avgMemory = tools.getMemoryUsage() / 1000000;
 							avgThroughout = (int) (spoutNum / (calThroughtInterval/ 1000));
 							throughtNum = 1;
 						} else {
 							
 							avgCpu = ( avgCpu * throughtNum + tools.getCpuUsage() ) / (throughtNum +1);
-							avgMemory = ( avgMemory * throughtNum + tools.getMemoryUsage() ) / (throughtNum +1);
+							avgMemory = ( avgMemory * throughtNum + tools.getMemoryUsage() / 1000000)
+									/ (throughtNum +1);
 							avgThroughout = (int) ((avgThroughout * throughtNum + (spoutNum 
 									/ (calThroughtInterval / 1000))) / (throughtNum + 1));
 							throughtNum++;
