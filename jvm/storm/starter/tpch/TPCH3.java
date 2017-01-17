@@ -53,9 +53,9 @@ public class TPCH3 {
 	
 	public static long wholeSampleTime = 1800000;	// one parallisilm half an hour
 	public static long intervalTime = 120000;	// 5 minites one sample
-	public static long calThroughtInterval = 5000;  // calculate throughput every this millseconds
-	public static long ignoreTime = 60000;
-	public static String intermediateTopic = "tpchtemptopics";		// 用作样本 训练 判断是否该选择新的配置的缓存topic
+	public static long calThroughtInterval = 2000;  // calculate throughput every this millseconds
+	//public static long ignoreTime = 60000;
+	//public static String intermediateTopic = "tpchtemptopics";		// 用作样本 训练 判断是否该选择新的配置的缓存topic
 	public static String drawTopic = "drawtopics";			// 用作画图数据的缓存topic
 	
 	/*public static int supervisors = 4;		// supervisor number
@@ -704,7 +704,6 @@ public class TPCH3 {
 		public static int windowLength = 30;	// need random
 		public static int emitFrequency = 10;	// need random
 		
-		
 		Tools tools  = null;
 		double avgCpu = 0.0;
 		long avgMemory = 0;
@@ -752,159 +751,28 @@ public class TPCH3 {
 							* TPCHQuery3.joinBoltNumber;
 				// Build the configuration required for connecting to Kafka
 				Properties props = new Properties();
-				props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
-						+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.24:9092");
+				props.put("metadata.broker.list", "192.168.0.100:9092,192.168.0.91:9092,"
+						+ "192.168.0.92:9092,192.168.0.93:9092,192.168.0.94:9092");
 				//props.put("topic.metadata.refresh.interval.ms", "2000");
 				props.put("serializer.class", "kafka.serializer.StringEncoder");
 				props.put("request.required.acks", "1");	// guarantee the message be sent
 				// Create the producer instance
 				ProducerConfig config = new ProducerConfig(props);
 				final Producer<String, String> producer = new Producer<String, String>(config);
-				
-				/*fos = isOnBolt ? new FileOutputStream(
-						"/home/wamdm/wengzujian/stormResult/onBolt_"
-								+ context.getThisTaskId()) : new FileOutputStream(
-										"/home/wamdm/wengzujian/stormResult/joinBolt_"
-												+ context.getThisTaskId());
-				writer = new BufferedWriter(
-						new OutputStreamWriter(fos, "utf-8"));
-				writer.write("supervisors, cpucores, memory(G), workers, onBoltNumber, "
-						+ "joinBoltNumber, onBoltParallism, joinBoltParallism, spoutsParallism,"
-						+ "windowLength, emitFrequency, onBoltRate, joinBoltRate\n");
-				writer.write(supervisors + "," + 
-						cpucores + "," + memory + ","
-						+ workers + "," + onBoltNumber + "," + 
-						joinBoltNumber + "," + onBolt
-						+ "," + joinBolt + "," + spouts + ","
-						+ windowLength + "," + emitFrequency + "\n");*/
-				// 每隔间隔时间长的时候 则发送平均数据
-				printSpoutSpeed.schedule(new TimerTask() {
 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						if (before.get(Calendar.SECOND) > 30) {
-							before.set(Calendar.MINUTE,
-									before.get(Calendar.MINUTE) + 1);
-						}
-
-						try {
-							//if( _context.getThisTaskIndex() == 1) {
-								/*HashMap hm = (HashMap) context
-									.getRegisteredMetricByName(
-											"__complete-latency")
-									.getValueAndReset();
-								
-								int completeLatency = ((Double)hm.get("default")).intValue();*/
-								//String dataString = df.format(before.getTime()) + ","
-								//		+ avgThroughout + "\n";
-								//writer.write(dataString);
-								//writer.flush();
-								
-								/*KeyedMessage<String, String> data = isOnBolt ? 
-										new KeyedMessage<String, String>(		
-										TPCH3.intermediateTopic, "onBolt,"+ taskCount+"," + dataString
-										+ "," + avgCpu + "," + avgMemory + "," + supervisors + "," 
-										+ cpucores + "," + memory + "," + workers + "," + onBoltNumber 
-										+ "," + joinBoltNumber + "," + kafkaBrokers + ","
-										+ kafkaPartitions + ","
- 										+ onBolt +"," + joinBolt + "," 
-										+ spouts +"," + windowLength +"," + emitFrequency ) : 
-										new KeyedMessage<String, String>(
-										TPCH3.intermediateTopic, "joinBolt,"+ taskCount+"," + dataString
-										+ "," + avgCpu + "," + avgMemory  + "," + supervisors + "," 
-										+ cpucores + "," + memory + "," + workers + "," + onBoltNumber 
-										+ "," + joinBoltNumber + + kafkaBrokers + ","
-										+ kafkaPartitions + 
-										"," + onBolt +"," + joinBolt + "," 
-										+ spouts +"," + windowLength +"," + emitFrequency );*/
-								// send intermediate data to kafka topic
-								//if(!isIgnore ) {
-								//	producer.send(data);
-								//}
-								//else {
-								//	isIgnore = false;
-								//}
-								
-							//}
-							//else {
-							//	writer.write(df.format(before.getTime()) + ","
-							//			+ avgThroughout
-							//			+ "\n");
-							//	writer.flush();
-							//}
-							
-							/*
-							 * if( avgThroughout == 0) { reSet();
-							 * 
-							 * }
-							 */
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						avgThroughout = throughtNum = 0;
-						avgCpu = avgMemory = 0;
-						before = Calendar.getInstance();
-					}
-
-				},  intervalTime, intervalTime);
-				
-				// latency writer
-				/*writeLatency.schedule(new TimerTask() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						try {
-							latencyFos = new FileOutputStream(
-									"/home/wamdm/wengzujian/stormResult/latency");
-							latencyWriter = new BufferedWriter(
-									new OutputStreamWriter(latencyFos, "utf-8"));
-							latencyWriter.write(TPCHQuery3.supervisors + "," + 
-									"".cpucores + "," + "".memory + ","
-									+ "".workers + "," + "".onBoltNumber + "," + 
-									"".joinBoltNumber + "," + "".onBolt
-									+ "," + "".joinBolt + "," + "".spouts + ","
-									+ "".windowLength + "," + "".emitFrequency + ",");
-							HashMap hm = (HashMap) context
-							.getRegisteredMetricByName(
-									"__complete-latency")
-							.getValueAndReset();
-					
-							int completeLatency = ((Double)hm.get("default")).intValue();
-							latencyWriter.write(completeLatency + "\n");
-							latencyWriter.flush();
-							latencyWriter.close();
-							
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-					}
-					
-				}, wholeSampleTime);*/
 				// 间隔时间短时 发送画图数据
 				calThroughput.schedule(new TimerTask() {
 
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						// LOG .info("latency : " + hm.get( "default"));
-						/*if( throughtNum == 0) {
-							// ignore the first begin time metric
-							throughtNum = 1;
-							return;
-						}*/
+						//if (avgThroughout == 0) {
 							
-						if (avgThroughout == 0) {
-							
-							avgCpu = tools.getCpuUsage();		// get cpu metric
-							avgMemory = tools.getMemoryUsage() / 1000000;
-							avgThroughout = (int) (spoutNum / (calThroughtInterval/ 1000));
-							throughtNum = 1;
-						} else {
+						avgCpu = tools.getCpuUsage();		// get cpu metric
+						avgMemory = tools.getMemoryUsage() / 1000000;
+						avgThroughout = (int) (spoutNum / (calThroughtInterval/ 1000));
+						throughtNum = 1;
+						/*} else {
 							
 							avgCpu = ( avgCpu * throughtNum + tools.getCpuUsage() ) / (throughtNum +1);
 							avgMemory = ( avgMemory * throughtNum + tools.getMemoryUsage() / 1000000)
@@ -912,7 +780,7 @@ public class TPCH3 {
 							avgThroughout = (int) ((avgThroughout * throughtNum + (spoutNum 
 									/ (calThroughtInterval / 1000))) / (throughtNum + 1));
 							throughtNum++;
-						}	
+						}*/	
 						/*HashMap hm = (HashMap) _context
 								.getRegisteredMetricByName(
 										"__complete-latency")

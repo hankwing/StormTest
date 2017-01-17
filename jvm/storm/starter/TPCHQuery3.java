@@ -103,8 +103,8 @@ public class TPCHQuery3 {
 		sampleVariable.add(emitFrequency);
 		
 		ZkHosts zkHosts = new ZkHosts(
-				"192.168.0.19:2181,192.168.0.21:2181,"
-				+ "192.168.0.22:2181,192.168.0.23:2181,192.168.0.24:2181");
+				"192.168.0.100:2181,192.168.0.91:2181,"
+				+ "192.168.0.92:2181,192.168.0.93:2181,192.168.0.94:2181");
 				//"192.168.0.72:2181");
 		
 		// lineItem kafka spout
@@ -208,52 +208,52 @@ public class TPCHQuery3 {
 	 * @author hankwing
 	 *
 	 */
-	public static class TickSpout extends BaseRichSpout {
-
-		Timer tick = null;
-		Random random = null;
-		SpoutOutputCollector _collector = null;
-		boolean isStart = true;
-		int spouts;
-
-		public TickSpout(int spouts) {
-			this.spouts = spouts;
-		}
-
-		@Override
-		public void nextTuple() {
-			// TODO Auto-generated method stub
-			if (isStart) {
-				isStart = false;
-				Calendar cd = Calendar.getInstance();
-				cd.set(Calendar.MINUTE, cd.get(Calendar.MINUTE) + 1);
-				cd.set(Calendar.SECOND, 0);
-				Utils.sleep(cd.getTimeInMillis()
-						- Calendar.getInstance().getTimeInMillis()
-						+ TPCH3.intervalTime);
-			} else {
-				Utils.sleep(TPCH3.intervalTime);
-			}
-			// 250000 1200
-			_collector.emit(new Values(random.nextInt(300000 / spouts), random
-					.nextInt(1500)));
-		}
-
-		@Override
-		public void open(Map arg0, TopologyContext arg1,
-				SpoutOutputCollector arg2) {
-			// TODO Auto-generated method stub
-			random = new Random();
-			_collector = arg2;
-		}
-
-		@Override
-		public void declareOutputFields(OutputFieldsDeclarer arg0) {
-			// TODO Auto-generated method stub
-			arg0.declare(new Fields("spoutInterval", "sleepTime"));
-		}
-
-	}
+//	public static class TickSpout extends BaseRichSpout {
+//
+//		Timer tick = null;
+//		Random random = null;
+//		SpoutOutputCollector _collector = null;
+//		boolean isStart = true;
+//		int spouts;
+//
+//		public TickSpout(int spouts) {
+//			this.spouts = spouts;
+//		}
+//
+//		@Override
+//		public void nextTuple() {
+//			// TODO Auto-generated method stub
+//			if (isStart) {
+//				isStart = false;
+//				Calendar cd = Calendar.getInstance();
+//				cd.set(Calendar.MINUTE, cd.get(Calendar.MINUTE) + 1);
+//				cd.set(Calendar.SECOND, 0);
+//				Utils.sleep(cd.getTimeInMillis()
+//						- Calendar.getInstance().getTimeInMillis()
+//						+ TPCH3.intervalTime);
+//			} else {
+//				Utils.sleep(TPCH3.intervalTime);
+//			}
+//			// 250000 1200
+//			_collector.emit(new Values(random.nextInt(300000 / spouts), random
+//					.nextInt(1500)));
+//		}
+//
+//		@Override
+//		public void open(Map arg0, TopologyContext arg1,
+//				SpoutOutputCollector arg2) {
+//			// TODO Auto-generated method stub
+//			random = new Random();
+//			_collector = arg2;
+//		}
+//
+//		@Override
+//		public void declareOutputFields(OutputFieldsDeclarer arg0) {
+//			// TODO Auto-generated method stub
+//			arg0.declare(new Fields("spoutInterval", "sleepTime"));
+//		}
+//
+//	}
 
 	public static class ChangeRateBolt extends BaseRichBolt {
 

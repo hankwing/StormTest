@@ -58,7 +58,6 @@ public class TPCHKafkaSpouts {
 		long avgMemory = 0;
 		
 		int fixedAvgThroughout = 0;		// max throughput (per second)
-		int throughtNum = 0;
 		Timer calThroughput = null;
 		Timer stopCollectAndChangeRate = null;
 		long beginSleep = 0;
@@ -111,8 +110,8 @@ public class TPCHKafkaSpouts {
 			// List of Kafka brokers. Complete list of brokers is not
 			// required as the producer will auto discover the rest of
 			// the brokers. Change this to suit your deployment.
-			props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
-					+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.24:9092");
+			props.put("metadata.broker.list", "192.168.0.100:9092,192.168.0.91:9092,"
+					+ "192.168.0.92:9092,192.168.0.93:9092,192.168.0.94:9092");
 			//props.put("partitioner.class", "storm.starter.kafka.SimplePartitioner");
 			// Serializer used for sending data to kafka. Since we are sending
 			// string,
@@ -129,22 +128,17 @@ public class TPCHKafkaSpouts {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					// LOG .info("latency : " + hm.get( "default"));
-
-					if (avgThroughout == 0) {
-						
-						avgCPU = tools.getCpuUsage();		// get cpu metric
-						avgMemory = tools.getMemoryUsage() / 1000000;
-						avgThroughout = (int) (spoutNum / (TPCH3.calThroughtInterval/ 1000) );
-						throughtNum = 1;
-					} else {
+					avgCPU = tools.getCpuUsage();		// get cpu metric
+					avgMemory = tools.getMemoryUsage() / 1000000;
+					avgThroughout = (int) (spoutNum / (TPCH3.calThroughtInterval/ 1000) );
+					/*} else {
 						avgCPU = ( avgCPU * throughtNum + tools.getCpuUsage() ) / (throughtNum +1);
 						avgMemory = ( avgMemory * throughtNum + tools.getMemoryUsage() / 1000000 ) 
 								/ (throughtNum +1);
 						avgThroughout = (int) ((avgThroughout * throughtNum +(spoutNum 
 								/ (TPCH3.calThroughtInterval / 1000))) / (throughtNum + 1));
 						throughtNum++;
-					}
+					}*/
 					// LOG.info("avg throughput: " + sleepInterval + ": "
 					// +evgThroughout);
 					spoutNum = 0;
@@ -181,76 +175,6 @@ public class TPCHKafkaSpouts {
 				}
 
 			}, TPCH3.calThroughtInterval , TPCH3.calThroughtInterval);
-			
-			try {
-				//fos = new FileOutputStream(
-				//		"/home/wamdm/wengzujian/stormResult/ThroughputAndLatency_"
-				//				+ context.getThisTaskId());
-				//writer = new BufferedWriter(
-				//		new OutputStreamWriter(fos, "utf-8"));
-				
-				// stop collect max throughput after 5 minutes
-				stopCollectAndChangeRate.schedule(new TimerTask() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						if( sampleNumber == 1) {
-							fixedAvgThroughout = avgThroughout;
-						}
-						
-						if (before.get(Calendar.SECOND) > 30) {
-							before.set(Calendar.MINUTE,
-									before.get(Calendar.MINUTE) + 1);
-						}
-
-						try {
-							
-							/*HashMap hm = (HashMap) _context
-									.getRegisteredMetricByName(
-											"__complete-latency")
-									.getValueAndReset();*/
-							
-							//Double completeLatency = stormUiMetrics.getSpoutLatency();
-							//int completeLatency = 0;
-							//String dataString = df.format(before.getTime()) + ","
-							//		+ avgThroughout + "," +completeLatency +"\n";
-							//writer.write(dataString);
-							//writer.flush();
-							
-							//KeyedMessage<String, String> data = new KeyedMessage<String, String>(
-							//		TPCH3.intermediateTopic, "spoutRate," + taskCount + ","+ dataString
-							//		+ "," + avgCPU + "," + avgMemory);
-							// send intermediate data to kafka topic
-							//if(!isIgnore) {
-							//	producer.send(data);
-							//}
-							//else {
-							//	isIgnore = false;
-							//}
-
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						avgThroughout = throughtNum = 0;
-						avgCPU = avgMemory = 0;
-						before = Calendar.getInstance();
-						
-						//double randomDouble = randomno.nextDouble();
-						//spoutInterval = fixedAvgThroughout / sampleTotal * sampleNumber;
-						//sleepTime = 1000 * ( 1 - sampleNumber / sampleTotal);
-						//spoutInterval = (int) (fixedAvgThroughout * randomno.nextDouble());
-						//sleepTime = (int) (1000 * randomno.nextDouble());
-						sampleNumber ++;		
-					}
-					
-				}, TPCH3.intervalTime, TPCH3.intervalTime);
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			super.open(conf, context, collector);
 		}
 
