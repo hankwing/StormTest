@@ -69,9 +69,9 @@ public class TPCHQuery3 {
 	public static int emitFrequency = 10;	// need random
 	
 	public static boolean isKafkaForceFromStart  = false;
-	public static String customerTopicName = "customer_test";
-	public static String lineitemTopicName = "lineitem_test";
-	public static String orderTopicName = "order_test";
+	public static String customerTopicName = "customer";
+	public static String lineitemTopicName = "lineitem";
+	public static String orderTopicName = "order";
 	
 
 	public static void main(String[] args) {
@@ -103,8 +103,8 @@ public class TPCHQuery3 {
 		sampleVariable.add(emitFrequency);
 		
 		ZkHosts zkHosts = new ZkHosts(
-				"192.168.0.100:2181,192.168.0.91:2181,"
-				+ "192.168.0.92:2181,192.168.0.93:2181,192.168.0.94:2181");
+				"192.168.0.19:2181,192.168.0.21:2181,"
+				+ "192.168.0.22:2181,192.168.0.23:2181,192.168.0.25:2181");
 				//"192.168.0.72:2181");
 		
 		// lineItem kafka spout

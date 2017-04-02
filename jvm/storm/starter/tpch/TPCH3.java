@@ -52,11 +52,11 @@ import backtype.storm.utils.RotatingMap;
 public class TPCH3 {
 	
 	public static long wholeSampleTime = 1800000;	// one parallisilm half an hour
-	public static long intervalTime = 120000;	// 5 minites one sample
+	public static long intervalTime = 300000;	// 5 minites one sample
 	public static long calThroughtInterval = 2000;  // calculate throughput every this millseconds
 	//public static long ignoreTime = 60000;
 	//public static String intermediateTopic = "tpchtemptopics";		// 用作样本 训练 判断是否该选择新的配置的缓存topic
-	public static String drawTopic = "drawtopics";			// 用作画图数据的缓存topic
+	public static String drawTopic = "drawtopic";			// 用作画图数据的缓存topic
 	
 	/*public static int supervisors = 4;		// supervisor number
 	public static int cpucores = 96;
@@ -751,8 +751,8 @@ public class TPCH3 {
 							* TPCHQuery3.joinBoltNumber;
 				// Build the configuration required for connecting to Kafka
 				Properties props = new Properties();
-				props.put("metadata.broker.list", "192.168.0.100:9092,192.168.0.91:9092,"
-						+ "192.168.0.92:9092,192.168.0.93:9092,192.168.0.94:9092");
+				props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
+						+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.25:9092");
 				//props.put("topic.metadata.refresh.interval.ms", "2000");
 				props.put("serializer.class", "kafka.serializer.StringEncoder");
 				props.put("request.required.acks", "1");	// guarantee the message be sent

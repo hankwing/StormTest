@@ -42,7 +42,7 @@ public class GetStormUiMetrics {
 	}
 	
 	public GetStormUiMetrics() {
-		TSocket socket = new TSocket("192.168.0.17", 6627);
+		TSocket socket = new TSocket("192.168.0.100", 6627);
 		TFramedTransport transport = new TFramedTransport(socket);
 		TBinaryProtocol protocol = new TBinaryProtocol(transport);
 		client = new Client(protocol);

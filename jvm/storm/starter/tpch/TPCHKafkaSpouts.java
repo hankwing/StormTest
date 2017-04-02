@@ -110,8 +110,8 @@ public class TPCHKafkaSpouts {
 			// List of Kafka brokers. Complete list of brokers is not
 			// required as the producer will auto discover the rest of
 			// the brokers. Change this to suit your deployment.
-			props.put("metadata.broker.list", "192.168.0.100:9092,192.168.0.91:9092,"
-					+ "192.168.0.92:9092,192.168.0.93:9092,192.168.0.94:9092");
+			props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
+					+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.25:9092");
 			//props.put("partitioner.class", "storm.starter.kafka.SimplePartitioner");
 			// Serializer used for sending data to kafka. Since we are sending
 			// string,
@@ -156,7 +156,6 @@ public class TPCHKafkaSpouts {
 						//		+ avgThroughout + "," +completeLatency +"\n";
 						//writer.write(dataString);
 						//writer.flush();
-						
 						KeyedMessage<String, String> data = new KeyedMessage<String, String>(
 								TPCH3.drawTopic, "spoutDraw," + taskCount + ","+ avgThroughout
 								+ "," + avgCPU + "," + avgMemory);
@@ -175,6 +174,33 @@ public class TPCHKafkaSpouts {
 				}
 
 			}, TPCH3.calThroughtInterval , TPCH3.calThroughtInterval);
+			
+			// 为了得到spout的random数据的定时器
+			stopCollectAndChangeRate.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					if( sampleNumber == 1) {
+						fixedAvgThroughout = avgThroughout;
+					}
+					
+					if (before.get(Calendar.SECOND) > 30) {
+						before.set(Calendar.MINUTE,
+								before.get(Calendar.MINUTE) + 1);
+					}
+					before = Calendar.getInstance();
+					
+					// double randomDouble = randomno.nextDouble();
+					spoutInterval = fixedAvgThroughout / sampleTotal * sampleNumber;
+					sleepTime = 1000 * ( 1 - sampleNumber / sampleTotal);
+					//spoutInterval = (int) (fixedAvgThroughout * randomno.nextDouble());
+					//sleepTime = (int) (1000 * randomno.nextDouble());
+					sampleNumber ++;
+				}
+				
+			}, TPCH3.intervalTime, TPCH3.intervalTime);
+			
 			super.open(conf, context, collector);
 		}
 
@@ -186,10 +212,10 @@ public class TPCHKafkaSpouts {
 			spoutNum = spoutNum + spoutNumOneTime.getNum();
 			// LOG.info("spout Number!:" + spoutNum);
 			spoutNumOneTime.reset();
-			/*if (controlSpeedNum++ > spoutInterval) {
+			if (controlSpeedNum++ > spoutInterval) {
 				Utils.sleep(sleepTime);
 				controlSpeedNum = 0;
-			}*/
+			}
 		}
 		
 	}
