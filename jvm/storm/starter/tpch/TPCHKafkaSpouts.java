@@ -23,7 +23,6 @@ import kafka.producer.ProducerConfig;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
 import storm.starter.TPCHQuery3;
-import storm.starter.tools.GetStormUiMetrics;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.utils.Utils;
@@ -71,7 +70,6 @@ public class TPCHKafkaSpouts {
 		List<Integer> sampleVariable = null;
 		Random randomno = null;
 		Tools tools  = null;
-		GetStormUiMetrics stormUiMetrics = null;
 		boolean isIgnore = true;
 		
 		public GeneralKafkaSpout(SpoutConfig spoutConf) {
@@ -84,7 +82,6 @@ public class TPCHKafkaSpouts {
 		public void open(Map conf, TopologyContext context,
 				SpoutOutputCollector collector) {
 			// TODO Auto-generated method stub
-			stormUiMetrics = new GetStormUiMetrics();
 			tools = new Tools();
 			_conf = conf;
 			_context = context;
@@ -110,8 +107,8 @@ public class TPCHKafkaSpouts {
 			// List of Kafka brokers. Complete list of brokers is not
 			// required as the producer will auto discover the rest of
 			// the brokers. Change this to suit your deployment.
-			props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
-					+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.25:9092");
+			props.put("metadata.broker.list", "192.168.0.73:9092,192.168.0.74:9092,"
+					+ "192.168.0.75:9092,192.168.0.76:9092,192.168.0.77:9092");
 			//props.put("partitioner.class", "storm.starter.kafka.SimplePartitioner");
 			// Serializer used for sending data to kafka. Since we are sending
 			// string,
