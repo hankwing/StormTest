@@ -107,6 +107,8 @@ public class TPCHKafkaSpouts {
 			// List of Kafka brokers. Complete list of brokers is not
 			// required as the producer will auto discover the rest of
 			// the brokers. Change this to suit your deployment.
+			//props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
+			//		+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.25:9092");
 			props.put("metadata.broker.list", "192.168.0.73:9092,192.168.0.74:9092,"
 					+ "192.168.0.75:9092,192.168.0.76:9092,192.168.0.77:9092");
 			//props.put("partitioner.class", "storm.starter.kafka.SimplePartitioner");
@@ -173,7 +175,7 @@ public class TPCHKafkaSpouts {
 			}, TPCH3.calThroughtInterval , TPCH3.calThroughtInterval);
 			
 			// 为了得到spout的random数据的定时器
-			stopCollectAndChangeRate.schedule(new TimerTask() {
+			/*stopCollectAndChangeRate.schedule(new TimerTask() {
 
 				@Override
 				public void run() {
@@ -196,7 +198,7 @@ public class TPCHKafkaSpouts {
 					sampleNumber ++;
 				}
 				
-			}, TPCH3.intervalTime, TPCH3.intervalTime);
+			}, TPCH3.intervalTime, TPCH3.intervalTime);*/
 			
 			super.open(conf, context, collector);
 		}
@@ -209,10 +211,10 @@ public class TPCHKafkaSpouts {
 			spoutNum = spoutNum + spoutNumOneTime.getNum();
 			// LOG.info("spout Number!:" + spoutNum);
 			spoutNumOneTime.reset();
-			if (controlSpeedNum++ > spoutInterval) {
+			/*if (controlSpeedNum++ > spoutInterval) {
 				Utils.sleep(sleepTime);
 				controlSpeedNum = 0;
-			}
+			}*/
 		}
 		
 	}

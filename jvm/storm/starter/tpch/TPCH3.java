@@ -751,6 +751,8 @@ public class TPCH3 {
 							* TPCHQuery3.joinBoltNumber;
 				// Build the configuration required for connecting to Kafka
 				Properties props = new Properties();
+				//props.put("metadata.broker.list", "192.168.0.19:9092,192.168.0.21:9092,"
+				//		+ "192.168.0.22:9092,192.168.0.23:9092,192.168.0.25:9092");
 				props.put("metadata.broker.list", "192.168.0.73:9092,192.168.0.74:9092,"
 						+ "192.168.0.75:9092,192.168.0.76:9092,192.168.0.77:9092");
 				//props.put("topic.metadata.refresh.interval.ms", "2000");

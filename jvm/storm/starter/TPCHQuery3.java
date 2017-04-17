@@ -102,10 +102,14 @@ public class TPCHQuery3 {
 		sampleVariable.add(windowLength);
 		sampleVariable.add(emitFrequency);
 		
+		//ZkHosts zkHosts = new ZkHosts(
+		//		"192.168.0.19:2181,192.168.0.21:2181,"
+		//		+ "192.168.0.22:2181,192.168.0.23:2181,192.168.0.25:2181");
+				//"192.168.0.72:2181");
+		
 		ZkHosts zkHosts = new ZkHosts(
 				"192.168.0.73:2181,192.168.0.74:2181,"
 				+ "192.168.0.75:2181,192.168.0.76:2181,192.168.0.77:2181");
-				//"192.168.0.72:2181");
 		
 		// lineItem kafka spout
 		SpoutConfig lineItemKafkaConfig = new SpoutConfig(zkHosts, lineitemTopicName, "/lineitem",
